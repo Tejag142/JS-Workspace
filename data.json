@@ -629,19 +629,19 @@
     "name": "Arcade Game",
     "description": "Play a variety of arcade-style games with simple controls and gameplay."
   },
-{
-  "id": 127,
+  {
+    "id": 127,
     "name": "Flower Garden Game",
     "description": "Plant flowers and avoid mushrooms in this fun timer-based game."
-},
-{
-  "id": 128,
+  },
+  {
+    "id": 128,
     "name": "Breakout Brick Game",
     "description": "Classic brick breaker game using HTML, CSS, and JavaScript with paddle and ball controls"
-}
-{
-  "id": 129,
+  },
+  {
+    "id": 129,
     "name": "Habit Tracker",
     "description": "Keep a track of your habits using Habit Tracker."
-}
+  }
 ]
