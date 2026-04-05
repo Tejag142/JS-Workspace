@@ -12,9 +12,16 @@ pipeline {
     stages {
         stage ('Git Checkout')
         steps {
-            dir ('projects/pop-balloons')
+            
             git clone https://github.com/Tejag142/JS-Workspace
+            
         }
+        stage ('Build') 
+        steps {
+            dir ('project/pop-balloons')
+            docker build -t popballoon:v1 .
+        }
+
     }
         
 }
