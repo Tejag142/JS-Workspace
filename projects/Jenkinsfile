@@ -1,27 +1,28 @@
 pipeline {
     agent any
     options {
-        timeout( time: 10, units: 'MINUTES' )
+        timeout(time: 10, unit: 'MINUTES') 
         disableConcurrentBuilds()
     }
-    parameters{
+    parameters {
         string(name: 'Jenkins', defaultValue: 'jenkins', description: 'Please provide the name')
         choice(name: 'Env', choices: ['dev', 'QA', 'PROD'], description: 'Please provide the ENV')
         text(name: 'Version', defaultValue: '1.0.0', description: 'Enter the Version')
     }
     stages {
-        stage ('Git Checkout')
-        steps {
-            
-            git clone https://github.com/Tejag142/JS-Workspace
-            
+        stage('Git Checkout') { 
+            steps {
+                // Using the native Jenkins Git step
+                git url: 'https://github.com/Tejag142/JS-Workspace.git', branch: 'master' 
+            }
         }
-        stage ('Build') 
-        steps {
-            dir ('project/pop-balloons')
-            docker build -t popballoon:v1 .
+        stage('Build') { 
+            steps {
+                dir('project/pop-balloons') {
+                    // Wrapping the bash command in an 'sh' step
+                    sh 'docker build -t popballoon:v1 .' 
+                }
+            }
         }
-
     }
-        
 }
