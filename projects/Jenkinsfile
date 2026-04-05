@@ -48,6 +48,7 @@ pipeline {
                 input message: 'Do you want to deploy to ${params.Env}?', submitter: 'admin'
                 sh """
                     docker run -d --name pop-balloon -p ${params.port}:80 popballoon:${params.Version}
+                }
             }
         }
     }
