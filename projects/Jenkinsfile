@@ -20,7 +20,7 @@ pipeline {
             steps {
                 dir('projects/pop-balloons') {
                     // Wrapping the bash command in an 'sh' step
-                    sh 'docker build -t popballoon:v1 .' 
+                    sh 'docker build -t popballoon:${params.Version} .' 
                 }
             }
         }
