@@ -8,6 +8,7 @@ pipeline {
         string(name: 'Jenkins', defaultValue: 'jenkins', description: 'Please provide the name')
         choice(name: 'Env', choices: ['dev', 'QA', 'PROD'], description: 'Please provide the ENV')
         text(name: 'Version', defaultValue: '1.0.0', description: 'Enter the Version')
+        string(name: 'port', defaultValue: '7005', description: 'Enter a port')
     }
     stages {
         stage('Git Checkout') { 
@@ -26,6 +27,27 @@ pipeline {
                     echo 'Hello ${params.PERSON} Image is building'
                     """
                 }
+            }
+        }
+        stage ('Push Image to DockerHub') {
+            steps {
+                withCredentials([usernamepassword(credentialsId: 'Docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    """
+                }
+                sh """
+                    docker tag popballoon:${params.Version} teja142/pop-balloon:${params.Version}
+                    docker push teja142/pop-balloon:${params.Version}
+                    docker logout
+               """
+            }
+        }
+        stage ('Run Container') {
+            steps {
+                input message: 'Do you want to deploy to ${params.Env}?', submitter: 'admin'
+                sh """
+                    docker run -d --name pop-balloon -p ${params.port}:80 popballoon:${params.Version}
             }
         }
     }
