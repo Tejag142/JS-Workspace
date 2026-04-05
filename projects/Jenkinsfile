@@ -14,13 +14,17 @@ pipeline {
             steps {
                 // Using the native Jenkins Git step
                 git url: 'https://github.com/Tejag142/JS-Workspace.git', branch: 'master' 
+                echo 'Hello ${params.PERSON} Code was copied'
             }
         }
         stage('Build') { 
             steps {
                 dir('projects/pop-balloons') {
                     // Wrapping the bash command in an 'sh' step
-                    sh 'docker build -t popballoon:${params.Version} .' 
+                    sh """
+                    docker build -t popballoon:${params.Version} .
+                    echo 'Hello ${params.PERSON} Image is building'
+                    """
                 }
             }
         }
