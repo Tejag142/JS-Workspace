@@ -5,6 +5,8 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
+        // Note: You defined 'Jenkins' here, but tried to use 'PERSON' later. 
+        // I have updated the script below to use params.Jenkins.
         string(name: 'Jenkins', defaultValue: 'jenkins', description: 'Please provide the name')
         choice(name: 'Env', choices: ['dev', 'QA', 'PROD'], description: 'Please provide the ENV')
         text(name: 'Version', defaultValue: '1.0.0', description: 'Enter the Version')
@@ -13,42 +15,47 @@ pipeline {
     stages {
         stage('Git Checkout') { 
             steps {
-                // Using the native Jenkins Git step
                 git url: 'https://github.com/Tejag142/JS-Workspace.git', branch: 'master' 
-                echo 'Hello ${params.PERSON} Code was copied'
+                // FIXED: Changed single quotes to double quotes for interpolation. Changed PERSON to Jenkins.
+                echo "Hello ${params.Jenkins} Code was copied"
             }
         }
         stage('Build') { 
             steps {
                 dir('projects/pop-balloons') {
-                    // Wrapping the bash command in an 'sh' step
                     sh """
                     docker build -t popballoon:${params.Version} .
-                    echo 'Hello ${params.PERSON} Image is building'
+                    echo "Hello ${params.Jenkins} Image is building"
                     """
                 }
             }
         }
-        stage ('Push Image to DockerHub') {
+        stage('Push Image to DockerHub') {
             steps {
-                withCredentials([usernamepassword(credentialsId: 'Docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
+                // FIXED: Changed 'usernamepassword' to 'usernamePassword' (camelCase is required)
+                withCredentials([usernamePassword(credentialsId: 'Docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    // FIXED: Used triple single quotes (''') here instead of double. 
+                    // This is CRITICAL for security so Groovy doesn't print your password in the console logs.
+                    sh '''
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    """
+                    '''
                 }
                 sh """
                     docker tag popballoon:${params.Version} teja142/pop-balloon:${params.Version}
                     docker push teja142/pop-balloon:${params.Version}
                     docker logout
-               """
+                """
             }
         }
-        stage ('Run Container') {
+        stage('Run Container') {
             steps {
-                input message: 'Do you want to deploy to ${params.Env}?', submitter: 'admin'
+                // FIXED: Changed single quotes to double quotes so ${params.Env} actually injects
+                input message: "Do you want to deploy to ${params.Env}?", submitter: 'admin'
+                
+                // FIXED: Properly closed the triple quotes (""")
                 sh """
                     docker run -d --name pop-balloon -p ${params.port}:80 popballoon:${params.Version}
-                }
+                """
             }
         }
     }
