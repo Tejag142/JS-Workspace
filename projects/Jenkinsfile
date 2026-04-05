@@ -54,7 +54,7 @@ pipeline {
                 
                 // FIXED: Properly closed the triple quotes (""")
                 sh """
-                    docker run -d --name pop-balloon -p ${params.port}:80 popballoon:${params.Version}
+                    docker run -d --name pop-balloon1 -p ${params.port}:80 popballoon:${params.Version}
                 """
             }
         }
